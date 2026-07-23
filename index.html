@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EVLE Calendar V3.5 GitHub</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>EVLE Calendar V3.5</h1>
+      <p>GitHub Pages version with current-month default, fixed categories, and automatic GitHub save on event changes</p>
+    </div>
+    <div class="button-row">
+      <button id="prevBtn">Previous</button>
+      <button id="monthBtn" class="active">1 Month</button>
+      <button id="threeBtn">3 Months</button>
+      <button id="nextBtn">Next</button>
+      <button id="newBtn">New Event</button>
+    </div>
+  </header>
+
+  <section class="tools">
+    <button id="loadCsvBtn">Reload events.csv</button>
+    <button id="downloadCsvBtn">Download CSV</button>
+    <button id="saveGithubBtn">Save to GitHub</button>
+    <label class="file-btn">Import CSV<input id="importCsv" type="file" accept=".csv,text/csv" hidden></label>
+    <span id="statusText"></span>
+  </section>
+
+  <div id="legend"></div>
+
+  <main class="layout">
+    <section id="calendar"></section>
+
+    <aside class="side">
+      <h3>Event Editor</h3>
+      <input id="eventId" type="hidden">
+      <label>Date<input id="eventDate" type="date"></label>
+      <label>Title<input id="eventTitle" type="text"></label>
+      <label>Category
+        <select id="eventCategory"></select>
+      </label>
+      <label>Status
+        <select id="eventStatus">
+          <option>Confirmed</option>
+          <option>Tentative</option>
+        </select>
+      </label>
+      <label>Details<textarea id="eventDetails"></textarea></label>
+      <div class="button-stack">
+        <button id="saveBtn">Save Event</button>
+        <button id="deleteBtn">Delete Event</button>
+        <button id="clearBtn">Clear Form</button>
+      </div>
+
+      <h3>GitHub Settings</h3>
+      <label>Owner / Org<input id="ghOwner" placeholder="your-org"></label>
+      <label>Repository<input id="ghRepo" placeholder="evle-calendar"></label>
+      <label>Branch<input id="ghBranch" value="main"></label>
+      <label>CSV path<input id="ghPath" value="events.csv"></label>
+      <label>Token<input id="ghToken" type="password" placeholder="github_pat_..."></label>
+      <button id="saveSettingsBtn">Save GitHub Settings</button>
+      <p class="note">Use a fine-grained token limited to this repository with Contents read/write permission.</p>
+    </aside>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
