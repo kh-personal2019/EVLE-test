@@ -144,6 +144,125 @@ function deleteEvent(){
   autoSaveToGithub();
 }
 
+
+function createCategorySelect(value){
+  const select = document.createElement("select");
+  select.dataset.field = "category";
+  CATEGORIES.forEach(category => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    if(category === value) option.selected = true;
+    select.appendChild(option);
+  });
+  return select;
+}
+
+function createStatusSelect(value){
+  const select = document.createElement("select");
+  select.dataset.field = "status";
+  ["Confirmed", "Tentative"].forEach(status => {
+    const option = document.createElement("option");
+    option.value = status;
+    option.textContent = status;
+    if(status === value) option.selected = true;
+    select.appendChild(option);
+  });
+  return select;
+}
+
+function addCell(row, element){
+  const cell = document.createElement("td");
+  cell.appendChild(element);
+  row.appendChild(cell);
+}
+
+function createTextInput(field, value, type){
+  const input = document.createElement("input");
+  input.dataset.field = field;
+  input.type = type || "text";
+  input.value = value || "";
+  return input;
+}
+
+function createDetailsInput(value){
+  const textarea = document.createElement("textarea");
+  textarea.dataset.field = "details";
+  textarea.value = value || "";
+  return textarea;
+}
+
+function renderCsvEditor(){
+  const body = el("csvTableBody");
+  if(!body) return;
+  body.innerHTML = "";
+  events.forEach(event => {
+    const row = document.createElement("tr");
+    row.dataset.id = event.id;
+    addCell(row, createTextInput("date", event.date, "date"));
+    addCell(row, createTextInput("title", event.title, "text"));
+    addCell(row, createCategorySelect(CATEGORIES.includes(event.category) ? event.category : "SnoCo"));
+    addCell(row, createStatusSelect(event.status || "Confirmed"));
+    addCell(row, createDetailsInput(event.details || ""));
+    const actionCell = document.createElement("td");
+    const deleteButton = document.createElement("button");
+    deleteButton.type = "button";
+    deleteButton.className = "small-btn danger-btn";
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", () => {
+      events = events.filter(item => item.id !== event.id);
+      saveLocal();
+      render();
+      autoSaveToGithub();
+    });
+    actionCell.appendChild(deleteButton);
+    row.appendChild(actionCell);
+    body.appendChild(row);
+  });
+}
+
+function addCsvRow(){
+  const record = {
+    id: Date.now().toString(),
+    date: toIsoDate(new Date(currentMonth.getFullYear(), currentMonth.getMonth(), 1)),
+    title: "New event",
+    category: "SnoCo",
+    status: "Confirmed",
+    details: ""
+  };
+  events.push(record);
+  saveLocal();
+  editEvent(record);
+  render();
+  setStatus("New CSV row added locally. Apply table changes after editing.");
+}
+
+function applyCsvTableChanges(){
+  const body = el("csvTableBody");
+  if(!body) return;
+  const rows = Array.from(body.querySelectorAll("tr"));
+  const updated = rows.map((row, index) => {
+    const date = row.querySelector('[data-field="date"]').value;
+    const title = row.querySelector('[data-field="title"]').value.trim();
+    const category = row.querySelector('[data-field="category"]').value;
+    const status = row.querySelector('[data-field="status"]').value;
+    const details = row.querySelector('[data-field="details"]').value.trim();
+    return {
+      id: row.dataset.id || (Date.now().toString() + "-" + index),
+      date,
+      title,
+      category,
+      status,
+      details
+    };
+  }).filter(event => event.date && event.title);
+  events = updated.sort((a,b) => a.date.localeCompare(b.date) || a.category.localeCompare(b.category));
+  saveLocal();
+  clearForm();
+  render();
+  autoSaveToGithub();
+}
+
 function render(){
   renderLegend();
   calendar.className = view === 3 ? "three" : "";
@@ -154,6 +273,7 @@ function render(){
   }
   el("monthBtn").classList.toggle("active", view === 1);
   el("threeBtn").classList.toggle("active", view === 3);
+  renderCsvEditor();
 }
 function renderLegend(){
   const legend = el("legend");
@@ -326,6 +446,8 @@ el("downloadCsvBtn").addEventListener("click", downloadCsv);
 el("loadCsvBtn").addEventListener("click", () => { localStorage.removeItem(STORAGE_EVENTS); reloadCsv(); });
 el("saveSettingsBtn").addEventListener("click", saveSettings);
 el("saveGithubBtn").addEventListener("click", saveToGithub);
+el("addCsvRowBtn").addEventListener("click", addCsvRow);
+el("applyCsvTableBtn").addEventListener("click", applyCsvTableChanges);
 el("importCsv").addEventListener("change", event => {
   const file = event.target.files[0];
   if(!file) return;
@@ -337,4 +459,6 @@ el("importCsv").addEventListener("change", event => {
 setupCategoryOptions();
 loadSettings();
 clearForm();
+events = starterEvents();
+render();
 loadEvents();

@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>EVLE Calendar V3.5 GitHub</title>
+  <title>EVLE Calendar V3.6 GitHub</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header>
     <div>
-      <h1>EVLE Calendar V3.5</h1>
-      <p>GitHub Pages version with current-month default, fixed categories, and automatic GitHub save on event changes</p>
+      <h1>EVLE Calendar V3.6</h1>
+      <p>GitHub Pages version with current-month default, fixed categories, automatic GitHub save, and in-page CSV table editor</p>
     </div>
     <div class="button-row">
       <button id="prevBtn">Previous</button>
@@ -65,6 +65,35 @@
       <p class="note">Use a fine-grained token limited to this repository with Contents read/write permission.</p>
     </aside>
   </main>
+
+
+  <section class="csv-editor-panel">
+    <div class="csv-editor-header">
+      <div>
+        <h2>CSV Table Editor</h2>
+        <p>Edit event data directly in the table, then apply changes to refresh the calendar and auto-save to GitHub if configured.</p>
+      </div>
+      <div class="csv-editor-actions">
+        <button id="addCsvRowBtn">Add Row</button>
+        <button id="applyCsvTableBtn">Apply Table Changes</button>
+      </div>
+    </div>
+    <div class="csv-table-wrap">
+      <table class="csv-table">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Status</th>
+            <th>Details</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody id="csvTableBody"></tbody>
+      </table>
+    </div>
+  </section>
 
   <script src="app.js"></script>
 </body>
